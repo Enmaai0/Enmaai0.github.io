@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import styled from 'styled-components'
 import GlobalStyles from './components/GlobalStyles'
 import NoteEditor from './components/NoteEditor'
