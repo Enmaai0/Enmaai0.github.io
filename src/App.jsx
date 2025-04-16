@@ -8,6 +8,7 @@ import windowsLogo from './assets/windows_vista/vista_white.ico'
 import backgroundImage from './assets/images/background.png'
 import './App.css'
 import './index.css'
+import { getNotes, addNote, updateNote, deleteNote } from './services/noteService';
 
 // 侧边栏样式组件
 const Sidebar = styled.div`
@@ -320,46 +321,79 @@ const ResourcesPage = () => (
 );
 
 function App() {
+  const [notes, setNotes] = useState([]);
+  const [editingNote, setEditingNote] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 加载笔记数据
+  useEffect(() => {
+    const loadedNotes = getNotes();
+    setNotes(loadedNotes);
+  }, []);
+
+  // 创建新笔记
+  const handleCreateNote = (noteData) => {
+    const newNote = addNote(noteData);
+    setNotes([...notes, newNote]);
+    setIsEditing(false);
+    setEditingNote(null);
+    return newNote;
+  };
+
+  // 更新笔记
+  const handleUpdateNote = (updatedNote) => {
+    if (updateNote(updatedNote)) {
+      setNotes(getNotes()); // 重新获取所有笔记
+      setIsEditing(false);
+      setEditingNote(null);
+      return true;
+    }
+    return false;
+  };
+
+  // 删除笔记
+  const handleDeleteNote = (id) => {
+    if (deleteNote(id)) {
+      setNotes(notes.filter(note => note.id !== id));
+      return true;
+    }
+    return false;
+  };
+
+  // 编辑笔记
+  const handleEditNote = (note) => {
+    setEditingNote(note);
+    setIsEditing(true);
+  };
+
+  // 取消编辑
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditingNote(null);
+  };
+
   return (
     <Router>
-      <GlobalStyles />
-      <Sidebar>
-        <Logo>
-          <img src={windowsLogo} alt="Logo" />
-          <h1>技术学习笔记</h1>
-        </Logo>
-        
-        <NavSection>
-          <h2>导航</h2>
-          <NavItem to="/">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
-            首页
-          </NavItem>
-          <NavItem to="/notes">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
-            学习笔记
-          </NavItem>
-          <NavItem to="/projects">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h-2V7h4v10z"></path></svg>
-            项目展示
-          </NavItem>
-          <NavItem to="/resources">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"></path></svg>
-            资源链接
-          </NavItem>
-        </NavSection>
-      </Sidebar>
-      
-      <Content>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/notes" element={<NotesPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/resources" element={<ResourcesPage />} />
-        </Routes>
-      </Content>
+      <AppContainer>
+        <Header onCreateNote={() => setIsEditing(true)} />
+        <MainContent>
+          {isEditing ? (
+            <NoteEditor 
+              note={editingNote} 
+              onSave={editingNote ? handleUpdateNote : handleCreateNote}
+              onCancel={handleCancelEdit}
+            />
+          ) : (
+            <NotesList 
+              notes={notes} 
+              onEdit={handleEditNote} 
+              onDelete={handleDeleteNote} 
+            />
+          )}
+        </MainContent>
+      </AppContainer>
     </Router>
-  )
+  );
 }
 
 export default App

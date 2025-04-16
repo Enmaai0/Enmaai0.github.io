@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
 import styled from 'styled-components';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const EditorContainer = styled.div`
   margin-top: 20px;
@@ -127,138 +129,86 @@ const ButtonGroup = styled.div`
   justify-content: flex-end;
 `;
 
-const NoteEditor = ({ onSave, initialNote = { title: '', content: '' } }) => {
-  const [note, setNote] = useState(initialNote);
-  const textareaRef = useRef(null);
+const NoteEditor = ({ note, onSave, onCancel }) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNote(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-  
-  // 处理富文本编辑功能
-  const handleFormat = (command, value = null) => {
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = note.content.substring(start, end);
-    let newText = '';
-    
-    switch(command) {
-      case 'bold':
-        newText = `**${selectedText}**`;
-        break;
-      case 'italic':
-        newText = `*${selectedText}*`;
-        break;
-      case 'heading':
-        newText = `## ${selectedText}`;
-        break;
-      case 'link':
-        const url = prompt('请输入链接地址:', 'https://');
-        if (url) newText = `[${selectedText}](${url})`;
-        else return;
-        break;
-      case 'list':
-        newText = selectedText.split('\n').map(line => `- ${line}`).join('\n');
-        break;
-      case 'code':
-        newText = `\`${selectedText}\``;
-        break;
-      case 'codeblock':
-        newText = `\`\`\`\n${selectedText}\n\`\`\``;
-        break;
-      default:
-        return;
+  useEffect(() => {
+    if (note) {
+      setTitle(note.title || '');
+      setContent(note.content || '');
+    } else {
+      setTitle('');
+      setContent('');
     }
-    
-    const newContent = note.content.substring(0, start) + newText + note.content.substring(end);
-    setNote(prev => ({ ...prev, content: newContent }));
-    
-    // 重新聚焦并设置光标位置
-    setTimeout(() => {
-      textarea.focus();
-      const newPosition = start + newText.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    }, 0);
-  };
+  }, [note]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (note.title.trim() && note.content.trim()) {
-      onSave({
-        ...note,
-        id: note.id || Date.now().toString(),
-        date: note.date || new Date().toISOString()
-      });
-      // 如果是新建笔记，则清空表单
-      if (!initialNote.id) {
-        setNote({ title: '', content: '' });
-      }
+    
+    if (!title.trim()) {
+      setError('请输入标题');
+      return;
     }
+    
+    if (!content.trim()) {
+      setError('请输入内容');
+      return;
+    }
+    
+    const noteData = {
+      ...(note || {}),
+      title: title.trim(),
+      content: content.trim()
+    };
+    
+    onSave(noteData);
   };
 
   return (
     <EditorContainer>
-      <form onSubmit={handleSubmit}>
+      <EditorForm onSubmit={handleSubmit}>
         <FormGroup>
-          <Label htmlFor="title">笔记标题</Label>
+          <Label>标题</Label>
           <Input
             type="text"
-            id="title"
-            name="title"
-            value={note.title}
-            onChange={handleChange}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="输入笔记标题..."
-            required
           />
         </FormGroup>
+        
         <FormGroup>
-          <Label htmlFor="content">笔记内容</Label>
-          <EditorWrapper>
-            <ToolbarWrapper>
-              <ToolbarButton type="button" onClick={() => handleFormat('bold')} title="加粗">
-                加粗
-              </ToolbarButton>
-              <ToolbarButton type="button" onClick={() => handleFormat('italic')} title="斜体">
-                斜体
-              </ToolbarButton>
-              <ToolbarButton type="button" onClick={() => handleFormat('heading')} title="标题">
-                标题
-              </ToolbarButton>
-              <ToolbarButton type="button" onClick={() => handleFormat('link')} title="链接">
-                链接
-              </ToolbarButton>
-              <ToolbarButton type="button" onClick={() => handleFormat('list')} title="列表">
-                列表
-              </ToolbarButton>
-              <ToolbarButton type="button" onClick={() => handleFormat('code')} title="代码">
-                代码
-              </ToolbarButton>
-              <ToolbarButton type="button" onClick={() => handleFormat('codeblock')} title="代码块">
-                代码块
-              </ToolbarButton>
-            </ToolbarWrapper>
-            <textarea
-              ref={textareaRef}
-              id="content"
-              name="content"
-              value={note.content}
-              onChange={handleChange}
-              placeholder="输入笔记内容..."
-              required
-            />
-          </EditorWrapper>
+          <Label>内容</Label>
+          <ReactQuill
+            theme="snow"
+            value={content}
+            onChange={setContent}
+            placeholder="输入笔记内容..."
+            modules={{
+              toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image', 'code-block'],
+                ['clean']
+              ]
+            }}
+          />
         </FormGroup>
+        
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        
         <ButtonGroup>
-          <Button type="submit">
-            {initialNote.id ? '更新笔记' : '保存笔记'}
-          </Button>
+          <SaveButton type="submit">
+            {note ? '更新笔记' : '保存笔记'}
+          </SaveButton>
+          <CancelButton type="button" onClick={onCancel}>
+            取消
+          </CancelButton>
         </ButtonGroup>
-      </form>
+      </EditorForm>
     </EditorContainer>
   );
 };
