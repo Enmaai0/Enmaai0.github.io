@@ -1,0 +1,62 @@
+/* Frutiger Aero Style CSS */
+
+/* Custom scrollbar for Frutiger Aero look */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #7eb6e9, #5fb2ef);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #5fb2ef, #4cc265);
+}
+
+/* Vista-style link effects */
+.vista-link {
+  position: relative;
+  display: inline-block;
+  padding: 0.5em 1em;
+  color: #0078d7;
+  text-decoration: none;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(240, 240, 240, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.vista-link:hover {
+  background: linear-gradient(to bottom, rgba(240, 240, 240, 0.9), rgba(230, 230, 230, 0.9));
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Glass card animations */
+.glass-card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo styles */
+.logo {
+  height: 32px;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 5px rgba(95, 178, 239, 0.8));
+}

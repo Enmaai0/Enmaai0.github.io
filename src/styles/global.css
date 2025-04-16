@@ -1,0 +1,16 @@
+body {
+  /* 确保背景图片路径正确 */
+  background-image: url('/assets/background.png') !important;
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  /* 防止背景被其他样式覆盖 */
+  background-color: transparent !important;
+}
+
+/* 确保没有其他元素覆盖了整个视口 */
+#root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}

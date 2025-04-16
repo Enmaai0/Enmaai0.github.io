@@ -1,0 +1,18 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vista-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7eb6e9" />
+      <stop offset="100%" stop-color="#4cc265" />
+    </linearGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="50" />
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#vista-gradient)" />
+  <g filter="url(#blur)">
+    <circle cx="400" cy="300" r="200" fill="#ffffff" opacity="0.3" />
+    <circle cx="1200" cy="600" r="300" fill="#ffffff" opacity="0.2" />
+    <circle cx="800" cy="900" r="250" fill="#ffffff" opacity="0.25" />
+    <circle cx="1600" cy="200" r="180" fill="#ffffff" opacity="0.15" />
+  </g>
+</svg>
