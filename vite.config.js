@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/tech-blog/',
+  // 在Vercel上部署时不需要base路径前缀
+  base: '/',
   build: {
     outDir: 'dist',
   },
