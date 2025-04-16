@@ -1,14 +1,86 @@
-import { useState, useEffect } from 'react'
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import styled from 'styled-components'
-import GlobalStyles from './components/GlobalStyles'
-import NoteEditor from './components/NoteEditor'
-import NotesList from './components/NotesList'
-import windowsLogo from './assets/windows_vista/vista_white.ico'
-import backgroundImage from './assets/images/background.png'
-import './App.css'
-import './index.css'
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import styled from 'styled-components';
+// Import missing components or create them
+import NotesList from './components/NotesList';
+import NoteEditor from './components/NoteEditor';
 import { getNotes, addNote, updateNote, deleteNote } from './services/noteService';
+// Import background image properly
+import backgroundImage from './assets/images/background.png';
+
+// 添加CSS变量
+const GlobalStyle = styled.div`
+  :root {
+    --sidebar-width: 240px;
+    --max-content-width: 1200px;
+    --border-radius: 8px;
+    --text-color: #333;
+    --primary-color: #5fb2ef;
+  }
+`;
+
+// Create a simple Header component since it's missing
+const Header = ({ onCreateNote }) => (
+  <HeaderContainer>
+    <HeaderTitle>技术博客</HeaderTitle>
+    {onCreateNote && (
+      <CreateButton onClick={onCreateNote}>
+        创建笔记
+      </CreateButton>
+    )}
+  </HeaderContainer>
+);
+
+const HeaderContainer = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(to bottom, #7eb6e9, #5fb2ef);
+  border-radius: 12px 12px 0 0;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+`;
+
+const HeaderTitle = styled.h1`
+  margin: 0;
+  font-size: 20px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+`;
+
+const CreateButton = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+`;
+
+// Add missing container components
+const AppContainer = styled.div`
+  max-width: var(--max-content-width, 1200px);
+  margin: 0 auto;
+  padding: 20px;
+`;
+
+const MainContent = styled.main`
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin-top: 20px;
+`;
 
 // 侧边栏样式组件
 const Sidebar = styled.div`
@@ -115,7 +187,7 @@ const Content = styled.div`
 `;
 
 const GlassCard = styled.div`
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.95);
@@ -375,25 +447,39 @@ function App() {
   return (
     <Router>
       <AppContainer>
-        <Header onCreateNote={() => setIsEditing(true)} />
-        <MainContent>
-          {isEditing ? (
-            <NoteEditor 
-              note={editingNote} 
-              onSave={editingNote ? handleUpdateNote : handleCreateNote}
-              onCancel={handleCancelEdit}
-            />
-          ) : (
-            <NotesList 
-              notes={notes} 
-              onEdit={handleEditNote} 
-              onDelete={handleDeleteNote} 
-            />
-          )}
-        </MainContent>
+        {/* <Sidebar>
+          <Logo>
+            <h1>技术博客</h1>
+          </Logo>
+          <NavSection>
+            <h2>导航</h2>
+            <NavItem to="/" className="active">首页</NavItem>
+            <NavItem to="/notes">笔记</NavItem>
+            <NavItem to="/projects">项目</NavItem>
+            <NavItem to="/resources">资源</NavItem>
+          </NavSection>
+        </Sidebar> */}
+        <Content>
+          <Header onCreateNote={() => setIsEditing(true)} />
+          <MainContent>
+            {isEditing ? (
+              <NoteEditor 
+                note={editingNote} 
+                onSave={editingNote ? handleUpdateNote : handleCreateNote}
+                onCancel={handleCancelEdit}
+              />
+            ) : (
+              <NotesList 
+                notes={notes} 
+                onEdit={handleEditNote} 
+                onDelete={handleDeleteNote} 
+              />
+            )}
+          </MainContent>
+        </Content>
       </AppContainer>
     </Router>
   );
 }
 
-export default App
+export default App;

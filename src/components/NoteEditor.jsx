@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -127,6 +127,26 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+`;
+
+const EditorForm = styled.form`
+  width: 100%;
+`;
+
+const ErrorMessage = styled.div`
+  color: #e53935;
+  margin-bottom: 10px;
+  font-size: 14px;
+`;
+
+const SaveButton = styled(Button)`
+  background: linear-gradient(to bottom, #7eb6e9, #5fb2ef);
+`;
+
+const CancelButton = styled(Button)`
+  background: linear-gradient(to bottom, #f0f0f0, #e1e1e1);
+  color: var(--text-color);
+  border: 1px solid #b5b5b5;
 `;
 
 const NoteEditor = ({ note, onSave, onCancel }) => {
